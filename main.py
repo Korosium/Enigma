@@ -1,5 +1,12 @@
+# To load the environment variables
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, render_template, url_for
 app = Flask(__name__)
+
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 posts = [
     {
