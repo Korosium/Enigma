@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect
 from enigma import app, db, argon2
 from enigma.forms import RegistrationForm, LoginForm
 from enigma.models import User, Post
-from flask_login import login_user
+from flask_login import login_user, current_user, logout_user
 
 posts = [
     {
@@ -30,6 +30,8 @@ def about():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("home"))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = argon2.generate_password_hash(form.password.data)
@@ -42,6 +44,8 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("home"))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -51,3 +55,8 @@ def login():
         else:
             flash("Login unsuccessful. Please check email and password.", "danger")
     return render_template("login.html", title="Login", form=form)
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("home"))
