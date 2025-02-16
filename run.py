@@ -1,4 +1,4 @@
-from enigma import app, db
+from enigma import app, db, argon2
 from enigma.models import User, Post
 
 def create_dummy_database():
@@ -8,7 +8,7 @@ def create_dummy_database():
         db.create_all()
 
         # Create the users
-        user_1 = User(username="Koro", email="totally@legit.com", password="1234")
+        user_1 = User(username="Koro", email="totally@legit.com", password=argon2.generate_password_hash("1234"))
         db.session.add(user_1)
         db.session.commit()
 
