@@ -10,4 +10,7 @@
 *.cfg
 *.env
 
+/enigma/static/profile_pics
+!/enigma/static/profile_pics/default.jpg
+
 reminder.txt
