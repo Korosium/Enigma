@@ -1,6 +1,5 @@
 from enigma import app, db, argon2
 from enigma.models import User, Post
-import time
 
 def create_dummy_database():
     with app.app_context():
@@ -18,7 +17,6 @@ def create_dummy_database():
         # Testing
         token = user_1.get_reset_token(10)
         print(token)
-        time.sleep(3)
         print(user_1.verify_reset_token(token))
 
         # Create the posts
