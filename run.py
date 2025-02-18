@@ -8,15 +8,16 @@ def create_dummy_database():
         db.create_all()
 
         # Create the users
-        user_1 = User(username="Koro", email="totally@legit.com", password=argon2.generate_password_hash("1234"))
+        user_1 = User(username="Koro", email="koro@koro.com", password=argon2.generate_password_hash("1234"))
+        user_2 = User(username="Orok", email="orok@orok.com", password=argon2.generate_password_hash("5678"))
         db.session.add(user_1)
+        db.session.add(user_2)
         db.session.commit()
 
         # Create the posts
-        post_1 = Post(title="Blog 1", content="First Post Content!", user_id=user_1.id)
-        post_2 = Post(title="Blog 2", content="Second Post Content!", user_id=user_1.id)
-        db.session.add(post_1)
-        db.session.add(post_2)
+        for i in range(25):
+            post = Post(title=f"Blog {i+1}", content=f"Post #{i+1}'s content!", user_id= user_1.id if i % 2 == 0 else user_2.id)
+            db.session.add(post)
         db.session.commit()
 
 if __name__ == "__main__":
