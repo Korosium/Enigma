@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, url_for, flash, redirect, request
 from enigma import db, argon2
-from enigma.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
 from enigma.models import User, Post
-from utils import save_picture, send_reset_email
+from enigma.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
+from enigma.users.utils import save_picture, send_reset_email
 from flask_login import login_user, current_user, logout_user, login_required
 
 users = Blueprint("users", __name__)

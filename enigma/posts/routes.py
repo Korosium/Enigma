@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, url_for, flash, redirect, request, abort
 from enigma import db
-from enigma.forms import PostForm
+from enigma.posts.forms import PostForm
 from enigma.models import Post
 from flask_login import current_user, login_required
 
