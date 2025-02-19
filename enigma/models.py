@@ -2,7 +2,8 @@ from time import time
 from datetime import datetime
 from base64 import b64encode, b64decode
 from itsdangerous import TimedSerializer as Serializer
-from enigma import db, login_manager, app
+from flask import current_app
+from enigma import db, login_manager
 from flask_login import UserMixin
 
 @login_manager.user_loader
@@ -18,13 +19,13 @@ class User(db.Model, UserMixin):
     posts = db.relationship("Post", backref="author", lazy=True)
 
     def get_reset_token(self, expires_sec=1800):
-        s = Serializer(app.config["SECRET_KEY"])
+        s = Serializer(current_app.config["SECRET_KEY"])
         token = s.dumps({"user_id": self.id, "expires_at": int(time()) + expires_sec})
         return b64encode(bytes(token, "utf-8")).decode("utf-8")
 
     @staticmethod
     def verify_reset_token(token):
-        s = Serializer(app.config["SECRET_KEY"])
+        s = Serializer(current_app.config["SECRET_KEY"])
         try:
             payload = s.loads(b64decode(token).decode("utf-8"))
             if payload["expires_at"] <= time():

@@ -1,5 +1,7 @@
-from enigma import app, db, argon2
+from enigma import create_app, db, argon2
 from enigma.models import User, Post
+
+app = create_app()
 
 def create_dummy_database():
     with app.app_context():
