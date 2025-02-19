@@ -1,4 +1,5 @@
-from flask import Blueprint
+from flask import Blueprint, request, render_template
+from enigma.models import Post
 
 main = Blueprint("main", __name__)
 
