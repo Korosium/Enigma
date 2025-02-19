@@ -2,10 +2,11 @@ import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
-from enigma import app, db, argon2
+from enigma import app, db, argon2, mail
 from enigma.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, RequestResetForm, ResetPasswordForm
 from enigma.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
+from flask_mail import Message
 
 @app.route("/")
 @app.route("/home")
@@ -138,6 +139,19 @@ def user_posts(username):
     posts = Post.query.filter_by(author=user).order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
     return render_template('user_posts.html', posts=posts, user=user)
 
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message("Password Reset Request", sender="noreply@enigma.com", recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{url_for('reset_token', token=token, _external=True)}
+
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    # We do not have a service for that at the moment.
+    # mail.send(msg)
+    # For now we print the token in the console.
+    print(url_for('reset_token', token=token, _external=True))
+
 @app.route("/reset_password", methods=["GET", "POST"])
 def reset_request():
     if current_user.is_authenticated:
@@ -145,6 +159,9 @@ def reset_request():
     form = RequestResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
+        if user: send_reset_email(user)
+        flash("An email has been sent with instructions to rest your password.", "info")
+        return redirect(url_for("login"))
     return render_template('reset_request.html', title="Reset Password", form=form)
 
 @app.route("/reset_password/<token>", methods=["GET", "POST"])
@@ -156,4 +173,10 @@ def reset_token(token):
         flash("That is an invalid or expired token.", "warning")
         return redirect(url_for("reset_request"))
     form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = argon2.generate_password_hash(form.password.data)
+        user.password = hashed_password
+        db.session.commit()
+        flash("Your password has been updated! You are now able to log in.", "success")
+        return redirect(url_for("login"))
     return render_template('reset_token.html', title="Reset Password", form=form)

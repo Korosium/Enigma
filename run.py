@@ -14,11 +14,6 @@ def create_dummy_database():
         db.session.add(user_2)
         db.session.commit()
 
-        # Testing
-        token = user_1.get_reset_token(10)
-        print(token)
-        print(user_1.verify_reset_token(token))
-
         # Create the posts
         for i in range(25):
             post = Post(title=f"Blog {i+1}", content=f"Post #{i+1}'s content!", user_id= user_1.id if i % 2 == 0 else user_2.id)
