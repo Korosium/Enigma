@@ -24,8 +24,10 @@ def create_app(config_class=Config):
     from enigma.users.routes import users
     from enigma.posts.routes import posts
     from enigma.main.routes import main
+    from enigma.errors.handlers import errors
     app.register_blueprint(users)
     app.register_blueprint(posts)
     app.register_blueprint(main)
+    app.register_blueprint(errors)
 
     return app
