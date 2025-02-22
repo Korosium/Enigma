@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, url_for, flash, redirect, request
 from enigma import db, argon2
 from enigma.models import User, Post
 from enigma.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
-from enigma.users.utils import save_picture, send_reset_email
+from enigma.users.utils import save_picture, load_picture, send_reset_email
 from flask_login import login_user, current_user, logout_user, login_required
 
 users = Blueprint("users", __name__)
@@ -57,8 +57,7 @@ def account():
     elif request.method == "GET":
         form.username.data = current_user.username
         form.email.data = current_user.email
-    image_file = url_for("static", filename=f"profile_pics/{current_user.image_file}")
-    return render_template("account.html", title="Account", image_file=image_file, form=form)
+    return render_template("account.html", title="Account", image_file=load_picture(), form=form)
 
 @users.route("/user/<string:username>")
 def user_posts(username):
