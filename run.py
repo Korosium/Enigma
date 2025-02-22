@@ -37,5 +37,5 @@ def create_dummy_database():
         print()
 
 if __name__ == "__main__":
-    create_dummy_database()
+    # create_dummy_database()
     app.run(debug=True)

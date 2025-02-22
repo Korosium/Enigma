@@ -4,7 +4,6 @@ from flask import url_for, current_app
 from enigma import mail
 from enigma.cipher.file import encrypt_file, decrypt_file
 from flask_mail import Message
-from flask_login import current_user
 from base64 import b64encode
 
 def save_picture(form_picture):
@@ -21,15 +20,15 @@ def save_picture(form_picture):
     # i.thumbnail(output_size)
     # i.save(picture_path)
 
-    return encrypt_file("abc", form_picture).split(os.path.sep).pop()
+    return encrypt_file(os.getenv("PROFILE_PICS_SECRET_KEY"), form_picture).split(os.path.sep).pop()
 
-def load_picture():
-    if current_user.image_file != "default.jpg":
-        cipher_path = os.path.join(current_app.root_path, "static", "profile_pics", current_user.image_file)
-        plaintext, filename = decrypt_file("abc", cipher_path)
+def load_picture(image_file):
+    if image_file != "default.jpg":
+        cipher_path = os.path.join(current_app.root_path, "static", "profile_pics", image_file)
+        plaintext, filename = decrypt_file(os.getenv("PROFILE_PICS_SECRET_KEY"), cipher_path)
         return f"data:image/{filename.split('.').pop()};base64,{b64encode(plaintext).decode('utf-8')}"
     else:
-        return url_for("static", filename=f"profile_pics/{current_user.image_file}")
+        return url_for("static", filename=f"profile_pics/{image_file}")
 
 def send_reset_email(user):
     token = user.get_reset_token()
