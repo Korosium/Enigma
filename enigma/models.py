@@ -1,3 +1,4 @@
+import os
 from time import time
 from datetime import datetime
 from base64 import b64encode, b64decode
@@ -14,7 +15,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default="default.jpg")
+    image_file = db.Column(db.String(20), nullable=False, default=os.getenv("DEFAULT_PROFILE_PICTURE"))
     password = db.Column(db.String(120), nullable=False)
     posts = db.relationship("Post", backref="author", lazy=True)
 

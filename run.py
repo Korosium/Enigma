@@ -1,9 +1,6 @@
 from enigma import create_app, db, argon2
 from enigma.models import User, Post
 
-from enigma.cipher.encrypt import encrypt_to_bytes, encrypt_to_base64
-from enigma.cipher.decrypt import decrypt_from_bytes_to_utf8
-
 app = create_app()
 
 def create_dummy_database():
@@ -18,8 +15,6 @@ def create_dummy_database():
         db.session.add(user_1)
         db.session.add(user_2)
         db.session.commit()
-        print(user_1)
-        print(user_2)
 
         # Create the posts
         for i in range(25):
@@ -27,15 +22,6 @@ def create_dummy_database():
             db.session.add(post)
         db.session.commit()
 
-        #
-        print()
-        key = "abc"
-        plaintext = "This is a test"
-        ciphertext = encrypt_to_bytes(key=key, plaintext=plaintext)
-        result = decrypt_from_bytes_to_utf8(key=key, ciphertext=ciphertext)
-        print(result)
-        print()
-
 if __name__ == "__main__":
-    # create_dummy_database()
+    create_dummy_database()
     app.run(debug=True)

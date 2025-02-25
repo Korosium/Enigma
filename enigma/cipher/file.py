@@ -3,22 +3,20 @@ from flask import current_app
 from enigma.cipher.encrypt import encrypt_to_bytes
 from enigma.cipher.decrypt import decrypt_from_bytes_to_bytes
 from Crypto.Hash import SHA256
+from werkzeug.datastructures.file_storage import FileStorage
 
 MAGIC_NUMBER = bytearray("EROSION", "utf-8") + bytearray([0xcc])
 
-def encrypt_file(key:str|bytes, file):
-    data = file.read()
-    filename = bytearray(file.filename, "utf-8")[:255]
-    plaintext = bytes([len(filename)]) + bytearray(filename) + bytearray(data)
+def encrypt_file(key:str|bytes, data:bytes, filename:str, path:str):
+    formated_filename = bytearray(filename, "utf-8")[:255]
+    plaintext = bytes([len(formated_filename)]) + bytearray(formated_filename) + bytearray(data)
     ciphertext = bytes(MAGIC_NUMBER + bytearray(encrypt_to_bytes(key=key, plaintext=plaintext)))
 
     checksum = SHA256.new(ciphertext).hexdigest()
     processed_filename = f"{checksum}.ero"
 
-    path = os.path.join(current_app.root_path, "static", "profile_pics", processed_filename) # temp
-
-    with open(path, "wb") as erosion:
-        erosion.write(ciphertext)
+    with open(os.path.join(path, processed_filename), "wb") as cipher_file:
+        cipher_file.write(ciphertext)
 
     return processed_filename
 
